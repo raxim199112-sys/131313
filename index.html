@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="uz" class="scroll-smooth [color-scheme:light] scroll-pt-[env(safe-area-inset-top,0px)]">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>13-maktab</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      keyframes: {
+        pop: {
+          '0%': { opacity: 0, transform: 'translate(var(--x),var(--y)) rotate(var(--r)) scale(4)', filter: 'blur(16px)' },
+          '60%': { opacity: 1, transform: 'scale(.88)', filter: 'blur(0)' },
+          '100%': { opacity: 1, transform: 'none' }
+        },
+        fl: {
+          '0%,100%': { transform: 'translate(0,0)' },
+          '50%': { transform: 'translate(30px,-40px)' }
+        },
+        bl: { '50%': { opacity: 0 } },
+        up: { from: { opacity: 0, transform: 'translateY(30px)' }, to: { opacity: 1, transform: 'none' } },
+        sh: { '25%': { transform: 'translateX(-8px)' }, '75%': { transform: 'translateX(8px)' } }
+      },
+      animation: {
+        pop: 'pop .9s cubic-bezier(.2,.9,.3,1.3) both',
+        fl: 'fl 8s ease-in-out infinite',
+        blink: 'bl 1s infinite',
+        up: 'up .8s ease both',
+        sh: 'sh .3s'
+      },
+      colors: {
+        blue: { 50: '#effaf8', 100: '#d3f3ee', 200: '#a6e6dc', 300: '#6fd3c5', 400: '#3bbdad', 500: '#1aa595', 600: '#0f8a7e', 700: '#0d7168', 800: '#0e5a54', 900: '#0f4a46' },
+        indigo: { 600: '#0b6e63', 700: '#0a5a52', 800: '#0a4a45', 900: '#08332f' },
+        emerald: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309' }
+      }
+    }
+  }
+};
+</script>
+</head>
+<body class="antialiased m-0 bg-[#f3f7f5] text-slate-800 font-sans pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] [&_input]:!text-base [&_select]:!text-base [&_textarea]:!text-base">
+
+<!-- Kirish oynasi -->
+<div id="welcome" class="fixed inset-0 z-[60] overflow-y-auto bg-slate-950 text-white transition-opacity duration-700">
+  <div class="absolute rounded-full blur-[60px] opacity-45 animate-fl w-72 h-72 bg-blue-600 top-10 left-5"></div>
+  <div class="absolute rounded-full blur-[60px] opacity-45 animate-fl [animation-delay:-3s] w-80 h-80 bg-fuchsia-600 bottom-10 right-5"></div>
+  <div class="absolute rounded-full blur-[60px] opacity-45 animate-fl [animation-delay:-5s] w-60 h-60 bg-emerald-500 top-1/2 left-1/2"></div>
+  <div class="relative min-h-full flex flex-col items-center justify-center text-center p-6">
+    <div id="ltr" class="text-5xl sm:text-8xl font-black tracking-wide min-h-[1.3em]"></div>
+    <p id="wtag" class="mt-3 text-blue-200 opacity-0 transition-opacity duration-1000" data-i="tag"></p>
+    <div id="lg" class="hidden animate-up mt-8 w-full max-w-sm bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 text-left">
+      <h2 class="text-lg font-extrabold mb-4 text-center" data-i="lt"></h2>
+      <input id="lu" data-p="lu" autocomplete="username" class="w-full mb-3 px-4 py-3 rounded-xl bg-white/15 border border-white/20 placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+      <input id="lp" type="password" data-p="lp" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()" class="w-full mb-2 px-4 py-3 rounded-xl bg-white/15 border border-white/20 placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-emerald-400">
+      <p id="le" class="text-red-300 text-xs h-4 mb-2"></p>
+      <button onclick="login()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 font-bold" data-i="lb"></button>
+      <div class="flex items-center gap-3 my-3 text-xs text-blue-200">
+        <span class="flex-1 h-px bg-white/20"></span>
+        <span>yoki</span>
+        <span class="flex-1 h-px bg-white/20"></span>
+      </div>
+      <button onclick="enter(null)" class="w-full py-3 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 font-semibold" data-i="gb"></button>
+      <div class="flex justify-center gap-2 mt-4">
+        <button onclick="setLang(0)" class="px-2 py-1 text-xs font-bold rounded bg-white/15">UZ</button>
+        <button onclick="setLang(1)" class="px-2 py-1 text-xs font-bold rounded bg-white/15">QZ</button>
+        <button onclick="setLang(2)" class="px-2 py-1 text-xs font-bold rounded bg-white/15">RU</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+  <div class="px-4 h-16 flex items-center justify-between gap-3">
+    <a href="#top" class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center font-extrabold">13</div>
+      <span class="font-bold text-xl hidden sm:inline" data-i="sch"></span>
+    </a>
+    <div class="hidden lg:flex gap-7 text-sm font-medium text-slate-600">
+      <a href="#statistika" class="hover:text-blue-600" data-i="ns"></a>
+      <a href="#direktor" class="hover:text-blue-600" data-i="ld"></a>
+      <a href="#oqituvchilar" class="hover:text-blue-600" data-i="nt"></a>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="setLang(0)" class="px-2 py-1 text-xs font-bold rounded bg-slate-100 hover:bg-slate-200">UZ</button>
+      <button onclick="setLang(1)" class="px-2 py-1 text-xs font-bold rounded bg-slate-100 hover:bg-slate-200">QZ</button>
+      <button onclick="setLang(2)" class="px-2 py-1 text-xs font-bold rounded bg-slate-100 hover:bg-slate-200">RU</button>
+      <button id="out" onclick="logout()" class="px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold" data-i="ex"></button>
+    </div>
+  </div>
+</nav>
+
+<header id="top" class="bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-900 text-white pt-16 pb-28 sm:pt-24 sm:pb-36 text-center px-4">
+  <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 border border-white/20 text-blue-100 text-sm font-semibold mb-6">
+    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    <span data-i="badge"></span>
+  </span>
+  <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold mb-6" data-i="sch"></h1>
+  <p class="max-w-2xl mx-auto text-base sm:text-xl text-blue-100" data-i="hero"></p>
+</header>
+
+<main class="px-4 sm:px-8 lg:px-12">
+  <section id="statistika" class="-mt-16 sm:-mt-20 relative z-10 mb-20 grid grid-cols-1 md:grid-cols-2 gap-6 scroll-mt-24">
+    <div class="order-first bg-white rounded-3xl p-7 shadow-xl border border-slate-100 transition-transform duration-200 hover:-translate-y-1.5">
+      <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider" data-i="s3"></p>
+      <p class="text-4xl font-extrabold mt-1"><span id="st-tch">0</span> <span class="text-base font-semibold text-emerald-600" data-i="u3"></span></p>
+    </div>
+    <div class="bg-white rounded-3xl p-7 shadow-xl border border-slate-100 transition-transform duration-200 hover:-translate-y-1.5">
+      <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider" data-i="s1"></p>
+      <div class="flex items-center gap-3 mt-1">
+        <button onclick="chStud(-1)" class="adm hidden w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-2xl font-bold leading-none">−</button>
+        <p class="text-4xl font-extrabold"><span id="st-students">0</span> <span class="text-base font-semibold text-blue-600" data-i="u1"></span></p>
+        <button onclick="chStud(1)" class="adm hidden w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-2xl font-bold leading-none">+</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="direktor" class="pb-20 scroll-mt-24">
+    <div class="text-center mb-8">
+      <span class="text-blue-600 font-bold text-sm uppercase tracking-wider" data-i="dl"></span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold mt-1" data-i="ld"></h2>
+    </div>
+    <div id="dir-box" class="flex flex-wrap justify-center gap-6"></div>
+  </section>
+
+  <section id="oqituvchilar" class="pb-24 scroll-mt-24">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-4">
+      <div>
+        <span class="text-blue-600 font-bold text-sm uppercase tracking-wider" data-i="tl"></span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-1" data-i="th"></h2>
+        <p class="text-slate-500 mt-2" data-i="thint"></p>
+      </div>
+      <div class="flex flex-wrap gap-2" id="filters"></div>
+    </div>
+    <input id="search" oninput="renderGrid()" data-p="srch" class="w-full max-w-md mb-6 px-4 py-3 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <div>
+      <button onclick="addTeacher()" class="adm hidden mb-6 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold" data-i="add"></button>
+    </div>
+    <div id="grid" class="grid gap-6 justify-center grid-cols-[repeat(auto-fill,minmax(min(100%,300px),300px))]"></div>
+  </section>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-12">
+  <div class="px-4 flex flex-col md:flex-row items-center justify-between gap-6 text-center">
+    <div>
+      <p class="font-bold text-white text-lg" data-i="ft"></p>
+      <p class="text-xs text-slate-400" data-i="tag"></p>
+    </div>
+    <div class="flex gap-3">
+      <a href="https://instagram.com/13mektep_qipshaq" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-sm font-semibold" data-i="ig1"></a>
+      <a href="https://instagram.com/13_maktab_maslahatchisi" target="_blank" rel="noopener" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-sm font-semibold" data-i="ig2"></a>
+    </div>
+    <div class="text-sm text-slate-400 md:text-right">
+      <p data-i="fa"></p>
+      <p class="mt-1">☎️ +998 (71) 200-13-13 • © 2026</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Ko'rish oynasi -->
+<div id="view" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" onclick="if(event.target===this)closeM('view')">
+  <div class="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] overflow-y-auto shadow-2xl">
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white flex gap-4 items-center">
+      <img id="v-img" class="w-20 h-20 rounded-2xl object-cover border-2 border-white/40 shrink-0" alt="">
+      <div class="min-w-0 flex-1">
+        <span id="v-cat" class="inline-block px-3 py-1 rounded-full bg-white/20 text-xs font-semibold mb-1"></span>
+        <h3 id="v-name" class="text-xl sm:text-2xl font-extrabold leading-tight"></h3>
+        <p id="v-subj" class="text-blue-100 text-sm mt-1"></p>
+      </div>
+      <button onclick="closeM('view')" class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 text-xl self-start">✕</button>
+    </div>
+    <div class="p-6 space-y-5">
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <p class="text-xs font-semibold text-slate-400 uppercase" data-i="exp"></p>
+          <p id="v-exp" class="font-bold mt-1"></p>
+        </div>
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <p class="text-xs font-semibold text-slate-400 uppercase" data-i="deg"></p>
+          <p id="v-deg" class="font-bold mt-1"></p>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-sm font-bold uppercase tracking-wider mb-2" data-i="abt"></h4>
+        <p id="v-bio" class="text-slate-600 text-sm leading-relaxed"></p>
+      </div>
+      <div class="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+        <h4 class="text-xs font-bold text-blue-800 uppercase mb-1" data-i="ach"></h4>
+        <p id="v-ach" class="text-sm text-blue-900 font-medium"></p>
+      </div>
+      <div class="text-sm text-slate-500">
+        <span data-i="ph"></span>: <a id="v-phone" class="font-semibold text-slate-800"></a>
+      </div>
+      <div id="v-admin" class="hidden gap-3 pt-3 border-t border-slate-100">
+        <button id="v-edit" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold" data-i="edit"></button>
+        <button id="v-del" class="flex-1 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-sm font-semibold" data-i="del"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tahrirlash oynasi -->
+<div id="form" class="fixed inset-0 z-[55] hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+  <div class="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-6 shadow-2xl">
+    <h3 id="f-title" class="text-xl font-extrabold mb-4"></h3>
+    <div class="space-y-3 text-sm">
+      <div class="flex items-center gap-4">
+        <img id="f-prev" class="w-20 h-20 rounded-2xl object-cover bg-slate-100" alt="">
+        <label class="px-4 py-2.5 rounded-xl bg-blue-50 text-blue-700 font-semibold cursor-pointer hover:bg-blue-100">
+          <span data-i="pic"></span>
+          <input id="f-file" type="file" accept="image/*" class="hidden" onchange="onFile(event)">
+        </label>
+      </div>
+      <input id="f-name" data-p="pn" class="w-full px-4 py-2.5 rounded-xl border border-slate-200">
+      <input id="f-subj" data-p="ps" class="w-full px-4 py-2.5 rounded-xl border border-slate-200">
+      <select id="f-cat" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white"></select>
+      <div class="grid grid-cols-2 gap-3">
+        <input id="f-exp" data-p="pe" class="px-4 py-2.5 rounded-xl border border-slate-200">
+        <input id="f-deg" data-p="pd" class="px-4 py-2.5 rounded-xl border border-slate-200">
+      </div>
+      <textarea id="f-bio" rows="3" data-p="pb" class="w-full px-4 py-2.5 rounded-xl border border-slate-200"></textarea>
+      <textarea id="f-ach" rows="2" data-p="pa" class="w-full px-4 py-2.5 rounded-xl border border-slate-200"></textarea>
+      <input id="f-phone" data-p="pph" class="w-full px-4 py-2.5 rounded-xl border border-slate-200">
+    </div>
+    <div class="flex gap-3 mt-5">
+      <button onclick="closeM('form')" class="flex-1 py-2.5 rounded-xl bg-slate-100 font-semibold text-sm" data-i="cancel"></button>
+      <button onclick="saveForm()" class="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-sm" data-i="save"></button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed right-5 bottom-5 z-[70] hidden items-center gap-3 bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl text-sm font-medium">
+  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+const USER = 'raxim123', PASS = '123raxim', K = 'maktab13_v4';
+const I = {
+  s3: ['O’qituvchilar soni', 'Мұғалімдер саны', 'Количество учителей'],
+  u3: ['nafar', 'адам', 'чел.'],
+  sch: ['13-maktab', '13-мектеп', 'Школа №13'],
+  tag: ['Bilim — kelajak poydevori', 'Білім — болашақтың іргетасы', 'Знания — фундамент будущего'],
+  lt: ['Tizimga kirish', 'Жүйеге кіру', 'Вход в систему'],
+  lu: ['Login', 'Логин', 'Логин'],
+  lp: ['Parol', 'Құпиясөз', 'Пароль'],
+  lb: ['Kirish', 'Кіру', 'Войти'],
+  gb: ['O’quvchi sifatida kirish', 'Оқушы ретінде кіру', 'Войти как ученик'],
+  er: ['Login yoki parol xato', 'Логин немесе құпиясөз қате', 'Неверный логин или пароль'],
+  ex: ['Chiqish', 'Шығу', 'Выйти'],
+  ns: ['Statistika', 'Статистика', 'Статистика'],
+  nt: ['O’qituvchilar', 'Мұғалімдер', 'Учителя'],
+  badge: ['Zamonaviy ta’lim va tarbiya markazi', 'Заманауи білім мен тәрбие орталығы', 'Современный центр образования и воспитания'],
+  hero: [
+    'Kelajak yaratuvchilari shakllanadigan bilim maskani. O’quvchilar, sinflar va fidoyi ustozlarimiz haqida barcha ma’lumot bir joyda.',
+    'Болашақ жасампаздары қалыптасатын білім ордасы. Оқушылар, сыныптар және ұстаздарымыз туралы барлық ақпарат бір жерде.',
+    'Образовательный центр, где формируются созидатели будущего. Вся информация об учениках, классах и педагогах — в одном месте.'
+  ],
+  s1: ['O’quvchilar soni', 'Оқушылар саны', 'Количество учеников'],
+  u1: ['nafar', 'адам', 'чел.'],
+  dl: ['Maktab rahbari', 'Мектеп басшысы', 'Руководитель школы'],
+  ld: ['Rahbariyat', 'Басшылық', 'Руководство'],
+  tl: ['Bizning jamoa', 'Біздің команда', 'Наша команда'],
+  th: ['Maktab o’qituvchilari', 'Мектеп мұғалімдері', 'Учителя школы'],
+  thint: ['To’liq ma’lumot uchun rasmni bosing.', 'Толық ақпарат үшін суретті басыңыз.', 'Нажмите на фото, чтобы узнать больше.'],
+  srch: ['🔍 O’qituvchini ism yoki fan bo’yicha qidirish...', '🔍 Мұғалімді іздеу...', '🔍 Поиск учителя...'],
+  add: ['+ O’qituvchi qo’shish', '+ Мұғалім қосу', '+ Добавить учителя'],
+  all: ['Hammasi', 'Барлығы', 'Все'],
+  c0: ['Aniq fanlar', 'Нақты ғылымдар', 'Точные науки'],
+  c1: ['Tabiiy fanlar', 'Жаратылыстану', 'Естественные науки'],
+  c2: ['Filologiya', 'Филология', 'Филология'],
+  c3: ['Ijtimoiy fanlar', 'Қоғамдық ғылымдар', 'Общественные науки'],
+  exp: ['Ish tajribasi', 'Жұмыс тәжірибесі', 'Стаж работы'],
+  deg: ['Malaka toifasi', 'Біліктілік санаты', 'Квалификация'],
+  abt: ['Haqida', 'Туралы', 'О человеке'],
+  ach: ['Yutuqlari', 'Жетістіктері', 'Достижения'],
+  ph: ['Telefon', 'Телефон', 'Телефон'],
+  edit: ['Tahrirlash', 'Өңдеу', 'Редактировать'],
+  del: ['O’chirish', 'Жою', 'Удалить'],
+  cf: ['Rostdan o’chirmoqchimisiz?', 'Шынымен жойғыңыз келе ме?', 'Точно удалить?'],
+  cancel: ['Bekor qilish', 'Бас тарту', 'Отмена'],
+  save: ['Saqlash', 'Сақтау', 'Сохранить'],
+  pic: ['📷 Rasm yuklash', '📷 Сурет жүктеу', '📷 Загрузить фото'],
+  ft: ['13-umumiy o’rta ta’lim maktabi', '13-жалпы орта білім беру мектебі', 'Общеобразовательная школа №13'],
+  ig1: ['13-maktab instagrami', '13-мектеп Instagram-ы', 'Instagram 13-й школы'],
+  ig2: ['13-maktab 2 instagrami', '13-мектеп 2 Instagram-ы', 'Instagram 13-й школы 2'],
+  fa: ['Manzil: Qibray tumani, Qipchoq mahallasi', 'Мекенжайы: Қибрай ауданы, Қыпшақ махалласы', 'Адрес: Кибрайский район, махалля Кипчак'],
+  at: ['O’qituvchi qo’shish', 'Мұғалім қосу', 'Добавить учителя'],
+  et: ['Tahrirlash', 'Өңдеу', 'Редактирование'],
+  pn: ['Ism-familiya', 'Аты-жөні', 'ФИО'],
+  ps: ['Fani / lavozimi', 'Пәні / лауазымы', 'Предмет / должность'],
+  pe: ['Tajriba (masalan 10 yil)', 'Тәжірибе', 'Стаж'],
+  pd: ['Toifasi', 'Санаты', 'Категория'],
+  pb: ['Ma’lumot', 'Ақпарат', 'Информация'],
+  pa: ['Yutuqlari', 'Жетістіктері', 'Достижения'],
+  pph: ['Telefon', 'Телефон', 'Телефон'],
+  saved: ['Saqlandi!', 'Сақталды!', 'Сохранено!'],
+  full: ['Xotira to’ldi, kichikroq rasm tanlang', 'Жад толды, кішірек сурет таңдаңыз', 'Память заполнена, выберите фото меньше']
+};
+
+let busy = false, L = 0, role = null, filter = 'all', editId = null, photo = '';
+const SUBJ = [
+  [0, 'Matematika', 'Математика', 'Математика'],
+  [0, 'Fizika', 'Физика', 'Физика'],
+  [0, 'Informatika', 'Информатика', 'Информатика'],
+  [1, 'Kimyo', 'Химия', 'Химия'],
+  [1, 'Biologiya', 'Биология', 'Биология'],
+  [1, 'Geografiya', 'География', 'География'],
+  [2, 'Ona tili', 'Ана тілі', 'Родной язык'],
+  [2, 'Adabiyot', 'Әдебиет', 'Литература'],
+  [2, 'Ingliz tili', 'Ағылшын тілі', 'Английский язык'],
+  [2, 'Rus tili', 'Орыс тілі', 'Русский язык'],
+  [3, 'Tarix', 'Тарих', 'История'],
+  [3, 'Huquq', 'Құқық', 'Право'],
+  [3, 'Jismoniy tarbiya', 'Дене шынықтыру', 'Физкультура'],
+  [3, 'Boshlang‘ich sinf', 'Бастауыш сынып', 'Начальные классы']
+];
+const M = {
+  sh: 'ш', ch: 'ч', yo: 'ё', yu: 'ю', ya: 'я', 'o‘': 'ў', 'g‘': 'ғ',
+  a: 'а', b: 'б', d: 'д', e: 'е', f: 'ф', g: 'г', h: 'ҳ', i: 'и', j: 'ж',
+  k: 'к', l: 'л', m: 'м', n: 'н', o: 'о', p: 'п', q: 'қ', r: 'р', s: 'с',
+  t: 'т', u: 'у', v: 'в', x: 'х', y: 'й', z: 'з'
+};
+const cyr = s => s.replace(/sh|ch|yo|yu|ya|o‘|g‘|./gi, m => {
+  const l = M[m.toLowerCase()];
+  return l ? (m[0] !== m[0].toLowerCase() ? l[0].toUpperCase() + l.slice(1) : l) : m;
+});
+const LO = { 0: 0, 2000: 1, 2001: 2 };
+
+function mk(id, type, nm, subject, cat) {
+  return {
+    id,
+    type,
+    name: [nm, cyr(nm), cyr(nm)],
+    subject,
+    cat,
+    experience: '—',
+    degree: '—',
+    bio: '—',
+    achievements: '—',
+    phone: id === 0 ? '+998 (71) 200-13-13' : '',
+    photo: ''
+  };
+}
+
+function seed() {
+  const N = [
+    'Karimova Dilnoza', 'Toshmatov Aziz', 'Rahimova Nigora', 'Ismoilov Doniyor', 'Sobirova Gulnora',
+    'Ergashev Sardor', 'Xolmatova Zilola', 'Abdullayeva Madina', 'Normatov Jamshid', 'Hasanova Shahnoza',
+    'Mirzayev Akmal', 'Turgunova Feruza', 'Sultonov Bekzod', 'Qosimova Sevara', 'Aliyev Ulug‘bek',
+    'Usmonova Barno', 'Saidov Rustam', 'Jo‘rayeva Kamola', 'Tursunov Eldor', 'Qo‘ziyeva Mohira',
+    'Bekmurodov Sanjar', 'Ahmedova Nodira', 'Davronov Islom', 'Qobilova Lola', 'Hakimov Farrux',
+    'Mamatqulova Sabina', 'Rustamov Behruz', 'Nurmatova Zarina', 'Olimov Shaxzod', 'Ibragimova Muhayyo'
+  ];
+  const d = {
+    students: 365,
+    teachers: [
+      mk(0, 'leader', 'Yusupov Sherzod', ['Maktab direktori', 'Мектеп директоры', 'Директор школы'], -1),
+      mk(2000, 'leader', 'Nazarova Malika', ['O‘quv ishlari bo‘yicha direktor o‘rinbosari (zavuch)', 'Директордың оқу ісі жөніндегі орынбасары (завуч)', 'Завуч (зам. директора по учебной работе)'], -1),
+      mk(2001, 'leader', 'Qodirov Otabek', ['Ma’naviy-ma’rifiy ishlar bo‘yicha o‘rinbosar', 'Рухани-ағартушылық жұмыс жөніндегі орынбасар', 'Зам. директора по духовно-просветительской работе'], -1)
+    ]
+  };
+  N.forEach((nm, i) => {
+    const s = SUBJ[i % 14];
+    d.teachers.push(mk(3000 + i, 'teacher', nm, [s[1] + ' o‘qituvchisi', s[2] + ' мұғалімі', 'Учитель: ' + s[3]], s[0]));
+  });
+  return d;
+}
+
+let db;
+try { db = JSON.parse(localStorage.getItem(K)); } catch (e) {}
+if (!db || !Array.isArray(db.teachers)) { db = seed(); saveData(); }
+if (typeof db.students !== 'number') { db.students = 365; }
+
+const $ = id => document.getElementById(id);
+const t = k => I[k][L];
+const tr = v => Array.isArray(v) ? (v[L] || v[0] || '') : (v || '');
+const pic = x => x.photo || avatar(tr(x.name), x.id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function saveData() {
+  try {
+    localStorage.setItem(K, JSON.stringify(db));
+    return true;
+  } catch (e) {
+    toast(t('full'));
+    return false;
+  }
+}
+
+function avatar(name, i) {
+  const h = (Math.abs(Number(i) || 0) * 53) % 360;
+  const ini = (name || 'M').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || 'M';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h},70%,58%)"/><stop offset="1" stop-color="hsl(${(h + 40) % 360},70%,34%)"/></linearGradient></defs><rect width="200" height="200" fill="url(#g)"/><circle cx="100" cy="76" r="34" fill="#fff" fill-opacity=".88"/><path d="M34 200c4-44 32-64 66-64s62 20 66 64z" fill="#fff" fill-opacity=".88"/><text x="100" y="86" text-anchor="middle" font-size="26" font-weight="700" fill="hsl(${h},60%,28%)" font-family="sans-serif">${esc(ini)}</text></svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function updateTexts() {
+  document.querySelectorAll('[data-i]').forEach(e => {
+    const k = e.dataset.i;
+    if (I[k]) e.textContent = I[k][L];
+  });
+  document.querySelectorAll('[data-p]').forEach(e => {
+    const k = e.dataset.p;
+    if (I[k]) e.placeholder = I[k][L];
+  });
+  document.documentElement.lang = ['uz', 'kk', 'ru'][L];
+}
+
+function setLang(i) {
+  L = i;
+  updateTexts();
+  renderAll();
+}
+
+/* Kirish: har soniyada bitta harf */
+const WORD = '13-maktab';
+WORD.split('').forEach((c, i) => {
+  setTimeout(() => {
+    const s = document.createElement('span');
+    s.className = 'inline-block animate-pop [text-shadow:0_0_28px_currentColor]';
+    s.textContent = c;
+    s.style.cssText = `color:hsl(${i * 40 + 190},90%,65%);--x:${(Math.random() - .5) * 600}px;--y:${(Math.random() - .5) * 500}px;--r:${(Math.random() - .5) * 360}deg;`;
+    $('ltr').appendChild(s);
+    if (i === WORD.length - 1) {
+      $('ltr').insertAdjacentHTML('beforeend', '<span class="animate-blink font-light text-white/70">|</span>');
+      setTimeout(() => {
+        $('wtag').style.opacity = 1;
+        $('lg').classList.remove('hidden');
+      }, 900);
+    }
+  }, (i + 1) * 1000);
+});
+
+function login() {
+  if ($('lu').value.trim() === USER && $('lp').value === PASS) {
+    enter('admin');
+  } else {
+    $('le').textContent = t('er');
+    const c = $('lg');
+    c.classList.remove('animate-sh');
+    void c.offsetWidth;
+    c.classList.add('animate-sh');
+  }
+}
+
+function enter(r) {
+  role = r;
+  applyRole();
+  $('welcome').style.opacity = 0;
+  setTimeout(() => $('welcome').classList.add('hidden'), 700);
+  scrollTo(0, 0);
+}
+
+function logout() {
+  role = null;
+  applyRole();
+  $('lp').value = '';
+  $('le').textContent = '';
+  $('welcome').classList.remove('hidden');
+  requestAnimationFrame(() => { $('welcome').style.opacity = 1; });
+}
+
+function applyRole() {
+  const a = role === 'admin';
+  document.querySelectorAll('.adm').forEach(e => e.classList.toggle('hidden', !a));
+  renderAll();
+}
+
+const cardCls = 'transition-transform duration-200 hover:-translate-y-1.5';
+const card = x => `
+  <div onclick="openView(${x.id})" class="${cardCls} bg-white rounded-3xl p-6 shadow-xl border border-slate-100 cursor-pointer flex flex-col items-center text-center">
+    <img src="${pic(x)}" class="w-24 h-24 rounded-2xl object-cover mb-4 shadow-md" alt="">
+    <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-2">${esc(t('c' + x.cat))}</span>
+    <h3 class="font-extrabold text-lg">${esc(tr(x.name))}</h3>
+    <p class="text-xs text-slate-500 mt-1">${esc(tr(x.subject))}</p>
+  </div>
+`;
+
+function renderAll() {
+  $('st-students').textContent = db.students;
+  $('st-tch').textContent = db.teachers.filter(x => x.type === 'teacher').length;
+
+  $('filters').innerHTML = ['all', 0, 1, 2, 3].map(i => `
+    <button onclick="setFilter(${i === 'all' ? "'all'" : i})" class="px-4 py-2 rounded-xl text-xs font-semibold ${filter === i ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 border border-slate-200'}">
+      ${esc(t(i === 'all' ? 'all' : 'c' + i))}
+    </button>
+  `).join('');
+
+  $('dir-box').innerHTML = db.teachers
+    .filter(x => x.type === 'leader')
+    .sort((a, b) => (LO[a.id] ?? 9) - (LO[b.id] ?? 9))
+    .map(d => `
+      <div onclick="openView(${d.id})" class="${cardCls} w-64 bg-white rounded-3xl p-6 shadow-xl border ${d.id === 0 ? 'border-blue-300 ring-2 ring-blue-200 order-first sm:order-none' : 'border-slate-100'} text-center cursor-pointer">
+        <img src="${pic(d)}" class="w-28 h-28 rounded-2xl mx-auto object-cover mb-4 shadow-md" alt="">
+        <h3 class="font-extrabold text-base">${esc(tr(d.name))}</h3>
+        <p class="text-xs text-blue-600 font-semibold mt-1">${esc(tr(d.subject))}</p>
+      </div>
+    `).join('');
+
+  $('f-cat').innerHTML = [0, 1, 2, 3].map(i => `<option value="${i}">${esc(t('c' + i))}</option>`).join('');
+  renderGrid();
+}
+
+function renderGrid() {
+  const q = $('search').value.trim().toLowerCase();
+  const m = (x, s) => !s || (tr(x.name) + ' ' + tr(x.subject)).toLowerCase().includes(s);
+  $('grid').innerHTML = db.teachers
+    .filter(x => x.type === 'teacher' && (filter === 'all' || x.cat === filter) && m(x, q))
+    .map(card)
+    .join('');
+}
+
+function setFilter(f) {
+  filter = f;
+  renderAll();
+}
+
+function chStud(v) {
+  if (role !== 'admin') return;
+  db.students = Math.max(0, db.students + v);
+  saveData();
+  renderAll();
+}
+
+const find = id => db.teachers.find(o => o.id === id);
+
+function openView(id) {
+  const x = find(id);
+  if (!x) return;
+  $('v-img').src = pic(x);
+  $('v-cat').textContent = x.type === 'leader' ? t('ld') : t('c' + x.cat);
+  $('v-name').textContent = tr(x.name);
+  $('v-subj').textContent = tr(x.subject);
+  $('v-exp').textContent = tr(x.experience) || '—';
+  $('v-deg').textContent = tr(x.degree) || '—';
+  $('v-bio').textContent = tr(x.bio) || '—';
+  $('v-ach').textContent = tr(x.achievements) || '—';
+  $('v-phone').textContent = x.phone || '—';
+  $('v-phone').href = x.phone ? 'tel:' + x.phone.replace(/[^\d+]/g, '') : '#';
+
+  const a = role === 'admin';
+  $('v-admin').classList.toggle('hidden', !a);
+  $('v-admin').classList.toggle('flex', a);
+  $('v-del').classList.toggle('hidden', x.type === 'leader');
+  $('v-edit').onclick = () => openForm(x.id);
+  $('v-del').onclick = () => delPerson(x.id);
+
+  $('view').classList.remove('hidden');
+  $('view').classList.add('flex');
+}
+
+function openForm(id, isNew = false) {
+  if (role !== 'admin') return;
+  closeM('view');
+  editId = id;
+  const x = find(id);
+  if (!x) return;
+  photo = x.photo || '';
+  $('f-title').textContent = isNew ? t('at') : t('et');
+  $('f-prev').src = pic(x);
+  $('f-name').value = tr(x.name);
+  $('f-subj').value = tr(x.subject);
+  $('f-cat').value = Math.max(0, x.cat);
+  $('f-exp').value = tr(x.experience);
+  $('f-deg').value = tr(x.degree);
+  $('f-bio').value = tr(x.bio);
+  $('f-ach').value = tr(x.achievements);
+  $('f-phone').value = x.phone || '';
+  $('f-cat').classList.toggle('hidden', x.type === 'leader');
+  $('f-file').value = '';
+  $('form').classList.remove('hidden');
+  $('form').classList.add('flex');
+}
+
+function onFile(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    const im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, 360 / Math.max(im.width, im.height));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(im.width * k));
+      c.height = Math.max(1, Math.round(im.height * k));
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      photo = c.toDataURL('image/jpeg', .8);
+      $('f-prev').src = photo;
+    };
+    im.src = r.result;
+  };
+  r.readAsDataURL(f);
+}
+
+function setLangField(current, val) {
+  const base = Array.isArray(current) ? [...current] : ['', '', ''];
+  base[L] = val;
+  return base;
+}
+
+function saveForm() {
+  if (role !== 'admin' || busy) return;
+  const nameVal = $('f-name').value.trim();
+  if (!nameVal) return;
+  busy = true;
+
+  const x = find(editId);
+  if (x) {
+    Object.assign(x, {
+      name: setLangField(x.name, nameVal),
+      subject: setLangField(x.subject, $('f-subj').value.trim()),
+      experience: setLangField(x.experience, $('f-exp').value.trim() || '—'),
+      degree: setLangField(x.degree, $('f-deg').value.trim() || '—'),
+      bio: setLangField(x.bio, $('f-bio').value.trim() || '—'),
+      achievements: setLangField(x.achievements, $('f-ach').value.trim() || '—'),
+      phone: $('f-phone').value.trim(),
+      photo
+    });
+    if (x.type === 'teacher') x.cat = parseInt($('f-cat').value, 10);
+    if (saveData()) {
+      closeM('form');
+      renderAll();
+      toast(t('saved'));
+    }
+  }
+  setTimeout(() => { busy = false; }, 700);
+}
+
+function delPerson(id) {
+  if (role !== 'admin') return;
+  if (!confirm(t('cf'))) return;
+  db.teachers = db.teachers.filter(x => x.id !== id);
+  saveData();
+  closeM('view');
+  renderAll();
+}
+
+function addTeacher() {
+  if (role !== 'admin' || busy) return;
+  busy = true;
+  const newId = Date.now();
+  db.teachers.push({
+    id: newId,
+    type: 'teacher',
+    name: ['Yangi o‘qituvchi', 'Жаңа мұғалім', 'Новый учитель'],
+    subject: ['Fani', 'Пәні', 'Предмет'],
+    cat: 0,
+    experience: '—',
+    degree: '—',
+    bio: '—',
+    achievements: '—',
+    phone: '',
+    photo: ''
+  });
+  filter = 'all';
+  if (saveData()) {
+    renderAll();
+    openForm(newId, true);
+  }
+  setTimeout(() => { busy = false; }, 500);
+}
+
+function closeM(id) {
+  $(id).classList.add('hidden');
+  $(id).classList.remove('flex');
+}
+
+function toast(m) {
+  const e = $('toast');
+  $('toast-msg').textContent = m;
+  e.classList.remove('hidden');
+  e.classList.add('flex');
+  setTimeout(() => {
+    e.classList.add('hidden');
+    e.classList.remove('flex');
+  }, 2500);
+}
+
+updateTexts();
+applyRole();
+</script>
+</body>
+</html>
